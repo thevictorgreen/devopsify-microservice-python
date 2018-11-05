@@ -7,7 +7,7 @@ node("cicd-build-slaves") {
   try {
 
     stage('CHECKOUT') {
-      //NOTIFYd
+      //NOTIFY
       notifyTeam("STARTED");
       // CLONE THE REPOSITORY INTO THE WORKSPACE
       // SHOULD MATCH THE REPOSITORY DEFINED IN doac.yaml
@@ -22,18 +22,18 @@ node("cicd-build-slaves") {
       def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
       println("SonarhomeInst:" + sonarqubeScannerHome)
       withCredentials([string(credentialsId: 'sonar', variable: 'sonarLogin')]) {
-        sh "${sonarqubeScannerHome}/bin/sonar-scanner -e -Dsonar.host.url=https://sonarqube.thevictorgreen.com -Dsonar.login=${sonarLogin} -Dsonar.projectName=REPLACE_ME -Dsonar.projectVersion=${commit_id} -Dsonar.projectKey=REPLACE_ME -Dsonar.sources=app/ -Dsonar.language=py"
+        sh "${sonarqubeScannerHome}/bin/sonar-scanner -e -Dsonar.host.url=REPLACE_ME -Dsonar.login=${sonarLogin} -Dsonar.projectName=REPLACE_ME -Dsonar.projectVersion=${commit_id} -Dsonar.projectKey=REPLACE_ME -Dsonar.sources=app/ -Dsonar.language=py"
       }
     }
 
     stage("TEST") {
       // RUN TEST
       dir ("app") {
-        def myTestContainer = docker.image('node:8.8.1')
+        def myTestContainer = docker.image('python:3.6.5-slim')
         myTestContainer.pull()
         myTestContainer.inside {
-          sh "npm install --only=dev"
-          sh "npm test"
+          sh "pip install --trusted-host pypi.python.org -r requirements.txt"
+          //sh "" //RUN TESTS HERE
         }
       }
     }
