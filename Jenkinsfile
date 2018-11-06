@@ -33,7 +33,7 @@ node("cicd-build-slaves") {
         myTestContainer.pull()
         myTestContainer.inside {
           sh "pip install --trusted-host pypi.python.org -r requirements.txt"
-          //sh "" //RUN TESTS HERE
+          sh "pytest -v"
         }
       }
     }

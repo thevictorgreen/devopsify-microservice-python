@@ -1,21 +1,14 @@
 from flask import Flask, Response, jsonify, request, make_response, url_for
 from flask_restful import Api, Resource, abort, reqparse
 import os
+from models.models import TaskModel
 
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web',
-        'done': False
-    }
-]
+
+# Populate tasks with dummy data
+tasks = []
+tasks.append(TaskModel(1,'Learn Python','Great Programming Language',False).to_dict())
+tasks.append(TaskModel(2,'Build App','Time to create that product',False).to_dict())
+tasks.append(TaskModel(3,'Get Paid','Monetize your skillset',False).to_dict())
 
 parser = reqparse.RequestParser()
 parser.add_argument('title')
@@ -39,12 +32,7 @@ class TaskList(Resource):
 
     def post(self):
         args = parser.parse_args(strict=True)
-        task = {
-            'id': tasks[-1]['id'] + 1,
-            'title': args['title'],
-            'description': args['description'],
-            'done': False
-        }
+        task = TaskModel(tasks[-1]['id'] + 1,args['title'],args['description'],False).to_dict()
         tasks.append(task)
         return jsonify({'task':task})
 
