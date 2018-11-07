@@ -5,10 +5,16 @@ from flask_cors import CORS
 import pytest
 import datetime, logging, sys, json_logging
 from tasks import *
+from helpers.middleware import setup_metrics
+import prometheus_client
+
+
+CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
 
 
 def create_app():
     app = Flask(__name__)
+    setup_metrics(app)
 
     json_logging.ENABLE_JSON_LOGGING = True
     json_logging.init(framework_name='flask')
@@ -29,6 +35,10 @@ def create_app():
     def healthz():
         logger.info("health-checked", extra={'tags': ['role:web', 'env:prod']})
         return jsonify({"status":"SUCCESS"})
+
+    @app.route('/metrics')
+    def metrics():
+        return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
     api.add_resource(TaskList,"/tasks")
     api.add_resource(Task,"/tasks/<int:id>")
