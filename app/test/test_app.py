@@ -1,3 +1,9 @@
+# test_app.py
+# To execute tests run
+# pytest -v
+# from the application root folder
+# To selectively execute tests
+# pytest -v -m get_request
 import pytest
 
 class TestApp:
