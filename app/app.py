@@ -7,6 +7,8 @@ import datetime, logging, sys, json_logging
 from tasks import *
 from helpers.middleware import setup_metrics
 import prometheus_client
+from jaeger_client import Config
+from flask_opentracing import FlaskTracer
 
 
 CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
@@ -42,6 +44,17 @@ def create_app():
 
     api.add_resource(TaskList,"/tasks")
     api.add_resource(Task,"/tasks/<int:id>")
+
+    def initialize_tracer():
+        config = Config(
+            config={
+                'sampler': {'type': 'const', 'param': 1},
+                'local_agent':{'reporting_host':"cicdnode-0.vdigital.io",'reporting_port':6831}
+            },
+            service_name='task-service')
+        return config.initialize_tracer() # also sets opentracing.tracer
+
+    flask_tracer = FlaskTracer(initialize_tracer, True, app)
 
     return app
 

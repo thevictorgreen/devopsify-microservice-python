@@ -6,3 +6,6 @@ pytest-flask==0.14.0
 gunicorn==19.9.0
 json-logging==0.0.9
 prometheus_client==0.4.2
+jaeger-client==3.12.0
+opentracing==1.3.0
+flask-opentracing-0.2.0
